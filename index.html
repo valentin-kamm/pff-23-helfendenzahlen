@@ -26,8 +26,20 @@
             }
             const data = await response.json();
             const code = await response.code;
+
+            // hide spinner
+            var spinner = document.getElementById('spinner');
+            spinner.style.display = "none"
   
             // set up total chart
+            var totalTitle = document.createElement('h2');
+            totalTitle.textContent = "Schichten Total"
+            document.body.append(totalTitle);
+            var chart = document.createElement('canvas');
+            chart.style.width = '100%';
+            chart.id = "totalChart";
+            chart.style.maxWidth = '700px';
+            document.body.append(chart);
             const {schichten_total, schichten_besetzt, prozent_besetzt} = data;
             setUpTotalChart(schichten_besetzt, schichten_total-schichten_besetzt, prozent_besetzt);
 
@@ -168,9 +180,7 @@
 
     </script>
 
-    <h2>Schichten Total</h2>
-
-    <canvas id="totalChart" style="width:100%;max-width:700px"></canvas>
+    <div class="loader center" id="spinner"></div>
 
 </body>
 </html>
