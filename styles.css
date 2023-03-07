@@ -1,0 +1,19 @@
+.parent {
+    margin: 1rem;
+    padding: 0rem 0rem;
+    text-align: left;
+  }
+  .child {
+    display: inline-block;
+    padding: 0rem 0rem;
+    vertical-align: middle;
+  }
+  .progressGreen {
+    accent-color: green;
+  }
+  .progressOrange {
+    accent-color: blue;
+  }
+  .progressRed {
+    accent-color: red;
+  }

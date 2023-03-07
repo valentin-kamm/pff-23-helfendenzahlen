@@ -3,9 +3,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>PFF 2023 Flow Helfenden-Zahlen</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
     
     <script>
         // url
@@ -15,7 +20,12 @@
         async function fetch_JSON() {
 
             const response = await fetch(url);
+            if (!response.ok) {
+                alert("Ein Fehler ist aufgetreten!");
+                return;
+            }
             const data = await response.json();
+            const code = await response.code;
   
             // set up total chart
             const {schichten_total, schichten_besetzt, prozent_besetzt} = data;
@@ -24,17 +34,109 @@
             // get ressorts
             const ressorts = data.ressorts;
             const ressortsOeffentlich = ressorts.filter(function (el) {
-                return !el.ressort_name.includes("-");  
+                return el.type == "public";
             });
             const ressortsPrivat = ressorts.filter(function (el) {
-                return el.ressort_name.includes("-");  
+                return el.type == "private";
             });
             console.log(ressortsOeffentlich);
 
+            // append öffentlich title
+            var title = document.createElement('h2');
+            title.textContent = "Öffentliche Schichten"
+            title.style.borderStyle = 'solid';
+            title.style.borderWidth = '1px';
+            title.style.padding = '2rem';
+            document.body.appendChild(title);
+
             // loop through all ressorts
-            ressorts.forEach(function (ressort, index) {
-    
+            ressortsOeffentlich.forEach(function (ressort, index) {
+                // add title
+                var title = document.createElement('h3');
+                title.textContent = ressort.ressort_name
+                document.body.appendChild(title);
+                // loop through all jobs for each ressort
+                ressort.jobs.forEach(function (job, index) {
+                    // add div for side by side
+                    var parentDiv = document.createElement('div');
+                    parentDiv.classList.add('parent');
+                    // add title
+                    var title = document.createElement('h4');
+                    title.textContent = job.job_name
+                    title.style.paddingLeft = '2rem';
+                    title.style.paddingRight = '1rem';
+                    title.classList.add('child');
+                    parentDiv.appendChild(title);
+                    // add progress bar
+                    var progBar = document.createElement('progress');
+                    progBar.value = job.prozent_besetzt.toString();
+                    progBar.max = "1";
+                    if (job.prozent_besetzt < 0.5) {
+                        progBar.classList.add('progressRed');
+                    }
+                    else if (job.prozent_besetzt > 0.8) {
+                        progBar.classList.add('progressGreen');
+                    }
+                    else {
+                        progBar.classList.add('progressOrange');
+                    }
+                    parentDiv.appendChild(progBar);
+                    // add paragraph with some text
+                    var paragraph = document.createElement('p');
+                    paragraph.textContent = (Math.round(100 * job.prozent_besetzt * 10) / 10).toFixed(1).toString() + "% (" + job.schichten_besetzt.toString() + " von " + job.schichten_total.toString() + " Schichten besetzt)";
+                    paragraph.classList.add('child');
+                    paragraph.style.paddingLeft = '1rem';
+                    parentDiv.appendChild(paragraph);
+                    // add parent div to website
+                    document.body.appendChild(parentDiv);
+                })
             });
+
+            // append öffentlich title
+            var title = document.createElement('h2');
+            title.textContent = "Private Schichten"
+            title.style.borderStyle = 'solid';
+            title.style.borderWidth = '1px';
+            title.style.padding = '2rem';
+            document.body.appendChild(title);
+
+            // loop through all ressorts
+            ressortsPrivat.forEach(function (ressort, index) {
+                // add div for side by side
+                var parentDiv = document.createElement('div');
+                parentDiv.classList.add('parent');
+                // add title
+                var title = document.createElement('h4');
+                title.textContent = ressort.ressort_name
+                title.style.paddingRight = '1rem';
+                title.classList.add('child');
+                parentDiv.appendChild(title);
+                // add progress bar
+                var progBar = document.createElement('progress');
+                let job = ressort.jobs[0];
+                progBar.value = job.prozent_besetzt.toString();
+                progBar.max = "1";
+                progBar.classList.add('child');
+                if (job.prozent_besetzt < 0.5) {
+                    progBar.classList.add('progressRed');
+                }
+                else if (job.prozent_besetzt > 0.8) {
+                    progBar.classList.add('progressGreen');
+                }
+                else {
+                    progBar.classList.add('progressOrange');
+                }
+                parentDiv.appendChild(progBar);
+                // add paragraph with some text
+                var paragraph = document.createElement('p');
+                paragraph.textContent = (Math.round(100 * job.prozent_besetzt * 10) / 10).toFixed(1).toString() + "% (" + job.schichten_besetzt.toString() + " von " + job.schichten_total.toString() + " Schichten besetzt)";
+                paragraph.classList.add('child');
+                paragraph.style.paddingLeft = '1rem';
+                parentDiv.appendChild(paragraph);
+                // add parent div to website
+                document.body.appendChild(parentDiv);
+            });
+
         }
 
         function setUpTotalChart(besetzt, nicht_besetzt, prozent) {
@@ -66,13 +168,7 @@
 
     </script>
 
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-    </script>
-
-    <h4>
-        Schichten Total
-    </h4>
+    <h2>Schichten Total</h2>
 
     <canvas id="totalChart" style="width:100%;max-width:700px"></canvas>
 
