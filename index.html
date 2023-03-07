@@ -6,9 +6,75 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>SuperNinja</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, molestias ea et veniam deserunt debitis adipisci nobis quos delectus vel nam quidem dolore tempora amet explicabo ullam, aut asperiores aperiam!</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, molestias ea et veniam deserunt debitis adipisci nobis quos delectus vel nam quidem dolore tempora amet explicabo ullam, aut asperiores aperiam!</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, molestias ea et veniam deserunt debitis adipisci nobis quos delectus vel nam quidem dolore tempora amet explicabo ullam, aut asperiores aperiam!</p>
+    
+    <script>
+        // url
+        const url = 'https://seesturm.ch/wp-json/seesturmAppCustomEndpoints/v1/test';
+        
+        // function to fetch JSON and generate the charts
+        async function fetch_JSON() {
+
+            const response = await fetch(url);
+            const data = await response.json();
+  
+            // set up total chart
+            const {schichten_total, schichten_besetzt, prozent_besetzt} = data;
+            setUpTotalChart(schichten_besetzt, schichten_total-schichten_besetzt, prozent_besetzt);
+
+            // get ressorts
+            const ressorts = data.ressorts;
+            const ressortsOeffentlich = ressorts.filter(function (el) {
+                return !el.ressort_name.includes("-");  
+            });
+            const ressortsPrivat = ressorts.filter(function (el) {
+                return el.ressort_name.includes("-");  
+            });
+            console.log(ressortsOeffentlich);
+
+            // loop through all ressorts
+            ressorts.forEach(function (ressort, index) {
+    
+            });
+        }
+
+        function setUpTotalChart(besetzt, nicht_besetzt, prozent) {
+  
+        var xValues = ["Besetzt", "Nicht besetzt"];
+        var yValues = [besetzt, nicht_besetzt];
+        var barColors = ["green", "red",];
+
+        new Chart("totalChart", {
+        type: "doughnut",
+        data: {
+        labels: xValues,
+        datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+        }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: besetzt.toString() + " von " + (besetzt+ nicht_besetzt).toString() + " Schichten besetzt (" + (Math.round(100 * prozent * 10) / 10).toString() + "%)"
+            },
+        }
+        });
+
+    }
+
+    fetch_JSON();
+
+    </script>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
+
+    <h4>
+        Schichten Total
+    </h4>
+
+    <canvas id="totalChart" style="width:100%;max-width:700px"></canvas>
+
 </body>
 </html>
