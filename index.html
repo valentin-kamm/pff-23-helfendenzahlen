@@ -14,7 +14,7 @@
     
     <script>
         // url
-        const url = 'https://seesturm.ch/wp-json/seesturmAppCustomEndpoints/v1/test';
+        const url = 'https://seesturm.ch/wp-json/seesturmAppCustomEndpoints/v1/pff';
         
         // function to fetch JSON and generate the charts
         async function fetch_JSON() {
@@ -33,15 +33,42 @@
   
             // set up total chart
             var totalTitle = document.createElement('h2');
-            totalTitle.textContent = "Schichten Total"
+            totalTitle.textContent = "Übersicht"
             document.body.append(totalTitle);
             var chart = document.createElement('canvas');
             chart.style.width = '100%';
             chart.id = "totalChart";
-            chart.style.maxWidth = '700px';
+            chart.style.maxWidth = '400px';
+            chart.style.borderStyle = 'solid';
+            chart.style.borderWidth = '1px';
+            chart.style.padding = '2rem';
             document.body.append(chart);
             const {schichten_total, schichten_besetzt, prozent_besetzt} = data;
             setUpTotalChart(schichten_besetzt, schichten_total-schichten_besetzt, prozent_besetzt);
+
+            // set up öffentlich chart
+            var chart = document.createElement('canvas');
+            chart.style.width = '100%';
+            chart.id = "oeffentlichChart";
+            chart.style.maxWidth = '400px';
+            chart.style.borderStyle = 'none';
+            chart.style.borderWidth = '1px';
+            chart.style.padding = '2rem';
+            document.body.append(chart);
+            const {schichten_oeffentlich_total, schichten_oeffentlich_besetzt, oeffentlich_prozent_besetzt} = data;
+            setUpOeffentlichChart(schichten_oeffentlich_besetzt, schichten_oeffentlich_total-schichten_oeffentlich_besetzt, oeffentlich_prozent_besetzt);
+
+            // set up privat chart
+            var chart = document.createElement('canvas');
+            chart.style.width = '100%';
+            chart.id = "privatChart";
+            chart.style.maxWidth = '400px';
+            chart.style.borderStyle = 'none';
+            chart.style.borderWidth = '1px';
+            chart.style.padding = '2rem';
+            document.body.append(chart);
+            const {schichten_privat_total, schichten_privat_besetzt, privat_prozent_besetzt} = data;
+            setUpPrivatChart(schichten_privat_besetzt, schichten_privat_total-schichten_privat_besetzt, privat_prozent_besetzt);
 
             // get ressorts
             const ressorts = data.ressorts;
@@ -153,28 +180,78 @@
 
         function setUpTotalChart(besetzt, nicht_besetzt, prozent) {
   
-        var xValues = ["Besetzt", "Nicht besetzt"];
-        var yValues = [besetzt, nicht_besetzt];
-        var barColors = ["green", "red",];
+            var xValues = ["Besetzt", "Nicht besetzt"];
+            var yValues = [besetzt, nicht_besetzt];
+            var barColors = ["green", "red",];
 
-        new Chart("totalChart", {
-        type: "doughnut",
-        data: {
-        labels: xValues,
-        datasets: [{
-            backgroundColor: barColors,
-            data: yValues
-        }]
-        },
-        options: {
-            title: {
-                display: true,
-                text: besetzt.toString() + " von " + (besetzt+ nicht_besetzt).toString() + " Schichten besetzt (" + (Math.round(100 * prozent * 10) / 10).toString() + "%)"
+            new Chart("totalChart", {
+            type: "doughnut",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                }]
             },
-        }
-        });
+            options: {
+                title: {
+                    display: true,
+                    text: "Insgesamt " + besetzt.toString() + " von " + (besetzt+ nicht_besetzt).toString() + " Schichten besetzt (" + (Math.round(100 * prozent * 10) / 10).toString() + "%)"
+                },
+            }
+            });
 
-    }
+        }
+
+        function setUpOeffentlichChart(besetzt, nicht_besetzt, prozent) {
+  
+            var xValues = ["Besetzt", "Nicht besetzt"];
+            var yValues = [besetzt, nicht_besetzt];
+            var barColors = ["green", "red",];
+
+            new Chart("oeffentlichChart", {
+            type: "doughnut",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: besetzt.toString() + " von " + (besetzt+ nicht_besetzt).toString() + " öffentlichen Schichten besetzt (" + (Math.round(100 * prozent * 10) / 10).toString() + "%)"
+                },
+            }
+            });
+
+        }
+
+        function setUpPrivatChart(besetzt, nicht_besetzt, prozent) {
+  
+            var xValues = ["Besetzt", "Nicht besetzt"];
+            var yValues = [besetzt, nicht_besetzt];
+            var barColors = ["green", "red",];
+
+            new Chart("privatChart", {
+            type: "doughnut",
+            data: {
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: besetzt.toString() + " von " + (besetzt+ nicht_besetzt).toString() + " privaten Schichten besetzt (" + (Math.round(100 * prozent * 10) / 10).toString() + "%)"
+                },
+            }
+            });
+
+        }
 
     fetch_JSON();
 
